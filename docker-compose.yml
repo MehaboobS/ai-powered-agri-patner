@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # =========================================================
+  # 1. PostgreSQL Database Service
+  # =========================================================
+  db:
+    image: postgres:15-alpine
+    container_name: bharath-agri-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-agri}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-agri}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agri-network
+
+  # =========================================================
+  # 2. FastAPI Backend Service (with Prisma ORM)
+  # =========================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bharath-agri-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-agri}
+      PORT: 8000
+      ALLOWED_ORIGINS: "*"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    networks:
+      - agri-network
+
+  # =========================================================
+  # 3. React + Vite Frontend Service (Nginx)
+  # =========================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bharath-agri-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+      - "80:80"
+    networks:
+      - agri-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  agri-network:
+    driver: bridge

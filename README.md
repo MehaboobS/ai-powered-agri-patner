@@ -108,24 +108,40 @@ bharath-digital-project/
 
 ---
 
-## ⚙️ Installation & Setup
+### 🐳 Method A: 1-Command Docker Deployment (Recommended)
 
-### Prerequisites
-- **Node.js** (v18.0 or higher) and `npm`
-- **Python** (v3.11 or higher)
-- **PostgreSQL** running on `localhost:5432` with a database named `agri`
+The easiest and most production-ready way to run the entire system (PostgreSQL Database, FastAPI Backend, and React Nginx Frontend) is with Docker Compose:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/MehaboobS/ai-powered-agri-patner.git
+   cd ai-powered-agri-patner
+   ```
+
+2. **(Optional) Configure Environment**:
+   ```bash
+   cp .env.docker.example .env
+   ```
+   *Optionally add your `GEMINI_API_KEY` for AI crop leaf disease diagnostics.*
+
+3. **Build and launch all containers**:
+   ```bash
+   docker compose up --build
+   ```
+
+4. **Access your services**:
+   - 🌐 **Web App**: `http://localhost:5173` (or `http://localhost`)
+   - 🚀 **FastAPI Interactive Docs**: `http://localhost:8000/docs`
+   - 🐘 **PostgreSQL Database**: `localhost:5432` (db: `agri`, user: `postgres`, pass: `postgres`)
+
+5. **Stop containers**:
+   ```bash
+   docker compose down
+   ```
 
 ---
 
-### Step 1: Clone Repository
-```bash
-git clone https://github.com/MehaboobS/ai-powered-agri-patner.git
-cd ai-powered-agri-patner
-```
-
----
-
-### Step 2: Backend Setup
+### 💻 Method B: Manual Local Setup (Without Docker)
 1. Navigate to the backend directory:
    ```bash
    cd backend

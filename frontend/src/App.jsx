@@ -60,6 +60,11 @@ import {
   FileText
 } from "lucide-react";
 
+// Base API URL: In production/Docker Nginx this defaults to "" (relative /api), or uses VITE_API_BASE_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL !== undefined 
+  ? import.meta.env.VITE_API_BASE_URL 
+  : (import.meta.env.PROD ? "" : "http://localhost:8000");
+
 // Global In-Memory Store to cache predefined City, State locations across renders
 let globalLocationsCache = null;
 
@@ -832,7 +837,7 @@ function FarmerRegistrationModal({
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:8000/api/farmers/register", {
+      const res = await fetch(`${API_BASE_URL}/api/farmers/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1145,7 +1150,7 @@ export default function App() {
     setSchemesLoading(true);
     setSchemesError(null);
     try {
-      const res = await fetch("http://localhost:8000/api/schemes/list");
+      const res = await fetch(`${API_BASE_URL}/api/schemes/list`);
       if (!res.ok) throw new Error("Failed to load government schemes directory.");
       const data = await res.json();
       setSchemesList(data);
@@ -1166,7 +1171,7 @@ export default function App() {
       const crop = overrideParams.crop_name !== undefined ? overrideParams.crop_name : schemeCrop;
       const st = overrideParams.state || schemeState || (registeredFarmer?.state) || (farmerLocation.state) || "Karnataka";
 
-      const res = await fetch("http://localhost:8000/api/schemes/check-eligibility", {
+      const res = await fetch(`${API_BASE_URL}/api/schemes/check-eligibility`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1194,7 +1199,7 @@ export default function App() {
   const handleSaveScheme = async (scheme) => {
     const farmerId = registeredFarmer?.id || "guest-farmer";
     try {
-      const res = await fetch("http://localhost:8000/api/schemes/save", {
+      const res = await fetch(`${API_BASE_URL}/api/schemes/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1298,7 +1303,7 @@ export default function App() {
     setAdminLoginLoading(true);
     setAdminLoginError(null);
     try {
-      const res = await fetch("http://localhost:8000/api/admin/login", {
+      const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1374,7 +1379,7 @@ export default function App() {
   // Fetch saved plans from PostgreSQL
   const fetchSavedPlans = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/fertilizer/saved");
+      const res = await fetch(`${API_BASE_URL}/api/fertilizer/saved`);
       if (res.ok) {
         const data = await res.json();
         setSavedPlans(data);
@@ -1450,7 +1455,7 @@ export default function App() {
     setIsSavingPlan(true);
     setSaveSuccessMsg(null);
     try {
-      const res = await fetch("http://localhost:8000/api/fertilizer/save", {
+      const res = await fetch(`${API_BASE_URL}/api/fertilizer/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1493,7 +1498,7 @@ export default function App() {
     setWeatherLoading(true);
     setWeatherError(null);
     try {
-      const response = await fetch(`http://localhost:8000/api/weather-advisory?lat=${lat}&lon=${lon}&language=${language}`);
+      const response = await fetch(`${API_BASE_URL}/api/weather-advisory?lat=${lat}&lon=${lon}&language=${language}`);
       if (!response.ok) {
         throw new Error("Unable to retrieve weather advisory.");
       }
@@ -1562,7 +1567,7 @@ export default function App() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/mandi-rates", {
+      const response = await fetch(`${API_BASE_URL}/api/mandi-rates`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1679,7 +1684,7 @@ export default function App() {
   useEffect(() => {
     // Load pre-seeded locations into Global In-Memory Store if not already cached
     if (!globalLocationsCache) {
-      fetch("http://localhost:8000/api/locations")
+      fetch(`${API_BASE_URL}/api/locations`)
         .then((res) => res.json())
         .then((data) => {
           globalLocationsCache = data;
@@ -1716,7 +1721,7 @@ export default function App() {
     setAdminLoading(true);
     setAdminError(null);
     try {
-      const res = await fetch("http://localhost:8000/api/farmers");
+      const res = await fetch(`${API_BASE_URL}/api/farmers`);
       if (!res.ok) throw new Error("Failed to load registered farmers.");
       const data = await res.json();
       setAdminFarmers(data.farmers || []);
@@ -1800,7 +1805,7 @@ export default function App() {
     formData.append("language", language);
 
     try {
-      const response = await fetch("http://localhost:8000/api/diagnose", {
+      const response = await fetch(`${API_BASE_URL}/api/diagnose`, {
         method: "POST",
         body: formData
       });
@@ -1813,7 +1818,7 @@ export default function App() {
       const data = await response.json();
       setDiagnosis(data);
     } catch (err) {
-      setError(err.message || "Failed to connect to FastAPI backend at http://localhost:8000.");
+      setError(err.message || `Failed to connect to FastAPI backend at ${API_BASE_URL || "/api"}.`);
     } finally {
       setLoading(false);
     }
