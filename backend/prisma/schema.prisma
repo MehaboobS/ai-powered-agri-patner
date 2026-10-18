@@ -1,0 +1,138 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+model Farmer {
+  id           String   @id @default(uuid())
+  name         String
+  phone_number String?
+  language     String   @default("English")
+  state        String?
+  city         String?
+  latitude     Float?
+  longitude    Float?
+  created_at   DateTime @default(now())
+
+  @@index([phone_number])
+  @@index([language])
+  @@index([created_at])
+}
+
+model Location {
+  id           String   @id
+  city         String
+  state        String
+  display_name String
+  latitude     Float
+  longitude    Float
+  major_crops  String[]
+  created_at   DateTime @default(now())
+
+  @@index([city])
+  @@index([state])
+}
+
+model DiagnosisScan {
+  id           String   @id @default(uuid())
+  crop_type    String?
+  disease_name String
+  confidence   Float
+  severity     String
+  language     String   @default("English")
+  created_at   DateTime @default(now())
+}
+
+model MandiPriceRecord {
+  id          String   @id @default(uuid())
+  city        String
+  market_name String
+  crop_name   String
+  min_price   Float
+  max_price   Float
+  modal_price Float
+  unit        String   @default("₹/kg")
+  trend       String
+  created_at  DateTime @default(now())
+}
+
+model FertilizerPlan {
+  id              String   @id @default(uuid())
+  crop_name       String
+  land_area       Float
+  area_unit       String   @default("Acres")
+  growth_stage    String
+  nitrogen_kg     Float
+  phosphorus_kg   Float
+  potassium_kg    Float
+  urea_bags       Float
+  dap_bags        Float
+  mop_bags        Float
+  fym_tons        Float
+  vermicompost_kg Float
+  estimated_cost  Float
+  created_at      DateTime @default(now())
+
+  @@index([crop_name])
+  @@index([created_at])
+}
+
+model AdminUser {
+  id         String   @id @default(uuid())
+  username   String   @unique
+  password   String
+  role       String   @default("superadmin")
+  created_at DateTime @default(now())
+
+  @@index([username])
+}
+
+model GovScheme {
+  id                    String              @id @default(uuid())
+  code                  String              @unique
+  name                  String
+  short_name            String
+  category              String
+  implementing_agency   String
+  benefit_summary       String
+  financial_benefit_max Float?
+  subsidy_percentage    Float?
+  target_crops          String[]
+  min_land_acres        Float?
+  max_land_acres        Float?
+  farmer_categories     String[]
+  state_applicability   String[]
+  description           String
+  key_eligibility       String[]
+  required_documents    String[]
+  application_steps     String[]
+  official_portal_url   String
+  helpline_number       String
+  created_at            DateTime            @default(now())
+
+  saved_by_farmers      SavedFarmerScheme[]
+
+  @@index([code])
+  @@index([category])
+}
+
+model SavedFarmerScheme {
+  id          String    @id @default(uuid())
+  farmer_id   String
+  scheme_id   String
+  scheme_code String
+  scheme_name String
+  status      String    @default("BOOKMARKED")
+  created_at  DateTime  @default(now())
+
+  scheme      GovScheme @relation(fields: [scheme_id], references: [id], onDelete: Cascade)
+
+  @@index([farmer_id])
+  @@index([scheme_id])
+}
+
