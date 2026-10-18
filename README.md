@@ -108,9 +108,21 @@ bharath-digital-project/
 
 ---
 
-### 🐳 Method A: 1-Command Docker Deployment (Recommended)
+### ☁️ Method A: Microsoft Azure Cloud Deployment (Production)
 
-The easiest and most production-ready way to run the entire system (PostgreSQL Database, FastAPI Backend, and React Nginx Frontend) is with Docker Compose:
+For complete instructions on deploying to **Microsoft Azure** (Azure Container Apps, Azure App Service, and Azure Database for PostgreSQL Flexible Server), see the detailed guide:
+👉 **[Microsoft Azure Deployment Guide (AZURE_DEPLOYMENT_GUIDE.md)](AZURE_DEPLOYMENT_GUIDE.md)**
+
+Includes:
+- **Azure Web App for Containers**: 1-click deployment via Azure Portal using Docker Compose.
+- **Azure Container Apps**: Automated Bicep template (`deploy/azure-resources.bicep`).
+- **GitHub Actions CI/CD**: Automatic build & deploy on every push (`.github/workflows/azure-deploy.yml`).
+
+---
+
+### 🐳 Method B: 1-Command Local Docker Deployment
+
+The easiest way to run the entire system locally (PostgreSQL Database, FastAPI Backend, and React Nginx Frontend) is with Docker Compose:
 
 1. **Clone the repository**:
    ```bash
@@ -141,7 +153,7 @@ The easiest and most production-ready way to run the entire system (PostgreSQL D
 
 ---
 
-### 💻 Method B: Manual Local Setup (Without Docker)
+### 💻 Method C: Manual Local Setup (Without Docker)
 1. Navigate to the backend directory:
    ```bash
    cd backend

@@ -1,0 +1,66 @@
+name: Deploy to Microsoft Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: ${{ secrets.ACR_NAME }} # e.g. bharathagriacr
+  RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP || 'rg-bharath-agri' }}
+  LOCATION: ${{ secrets.AZURE_LOCATION || 'eastus' }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        if: env.AZURE_CONTAINER_REGISTRY != ''
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry (ACR)
+        if: env.AZURE_CONTAINER_REGISTRY != ''
+        run: |
+          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+
+      # Build and push Backend image
+      - name: Build and Push Backend Image
+        if: env.AZURE_CONTAINER_REGISTRY != ''
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          docker build -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-backend:$IMAGE_TAG -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-backend:latest ./backend
+          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-backend:$IMAGE_TAG
+          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-backend:latest
+
+      # Build and push Frontend image
+      - name: Build and Push Frontend Image
+        if: env.AZURE_CONTAINER_REGISTRY != ''
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          docker build -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-frontend:$IMAGE_TAG -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-frontend:latest ./frontend
+          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-frontend:$IMAGE_TAG
+          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-frontend:latest
+
+      # Deploy to Azure Container Apps
+      - name: Deploy Backend to Azure Container Apps
+        if: env.AZURE_CONTAINER_REGISTRY != ''
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: bharath-agri-backend
+          imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-backend:latest
+
+      - name: Deploy Frontend to Azure Container Apps
+        if: env.AZURE_CONTAINER_REGISTRY != ''
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: bharath-agri-frontend
+          imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/bharath-frontend:latest
