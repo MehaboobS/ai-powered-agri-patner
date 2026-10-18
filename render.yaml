@@ -6,7 +6,7 @@ databases:
   # 1. Managed PostgreSQL Database (Free Tier)
   - name: bharath-agri-db
     databaseName: agri
-    user: postgres
+    user: agriuser
     plan: free
     region: oregon
 
