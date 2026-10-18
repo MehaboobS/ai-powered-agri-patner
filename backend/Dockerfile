@@ -34,4 +34,4 @@ COPY . .
 EXPOSE 8000
 
 # Push Prisma schema migrations to PostgreSQL on startup, then start Uvicorn ASGI server
-CMD ["sh", "-c", "prisma db push --schema=prisma/schema.prisma && uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "prisma db push --schema=prisma/schema.prisma && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -108,19 +108,26 @@ bharath-digital-project/
 
 ---
 
-### ☁️ Method A: Microsoft Azure Cloud Deployment (Production)
+### 🚀 Method A: 1-Click Cloud Deployment on Render (Easiest)
 
-For complete instructions on deploying to **Microsoft Azure** (Azure Container Apps, Azure App Service, and Azure Database for PostgreSQL Flexible Server), see the detailed guide:
-👉 **[Microsoft Azure Deployment Guide (AZURE_DEPLOYMENT_GUIDE.md)](AZURE_DEPLOYMENT_GUIDE.md)**
+Deploy the entire stack (Managed PostgreSQL + FastAPI Backend + React CDN Frontend) with 1 click using the included [`render.yaml`](render.yaml) Blueprint:
 
-Includes:
-- **Azure Web App for Containers**: 1-click deployment via Azure Portal using Docker Compose.
-- **Azure Container Apps**: Automated Bicep template (`deploy/azure-resources.bicep`).
-- **GitHub Actions CI/CD**: Automatic build & deploy on every push (`.github/workflows/azure-deploy.yml`).
+👉 **[Complete Render Deployment Guide (RENDER_DEPLOYMENT_GUIDE.md)](RENDER_DEPLOYMENT_GUIDE.md)**
+
+1. Go to **[dashboard.render.com/blueprints](https://dashboard.render.com/blueprints)**.
+2. Select your repository `MehaboobS/ai-powered-agri-patner`.
+3. Click **Apply** — Render automatically provisions the database, applies Prisma migrations, and deploys both backend and frontend with free HTTPS.
 
 ---
 
-### 🐳 Method B: 1-Command Local Docker Deployment
+### ☁️ Method B: Microsoft Azure Cloud Deployment
+
+For deploying to **Microsoft Azure** (Azure Container Apps, Azure App Service, and Azure Database for PostgreSQL Flexible Server):
+👉 **[Microsoft Azure Deployment Guide (AZURE_DEPLOYMENT_GUIDE.md)](AZURE_DEPLOYMENT_GUIDE.md)**
+
+---
+
+### 🐳 Method C: 1-Command Local Docker Deployment
 
 The easiest way to run the entire system locally (PostgreSQL Database, FastAPI Backend, and React Nginx Frontend) is with Docker Compose:
 

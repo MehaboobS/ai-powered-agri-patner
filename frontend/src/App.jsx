@@ -60,9 +60,10 @@ import {
   FileText
 } from "lucide-react";
 
-// Base API URL: In production/Docker Nginx this defaults to "" (relative /api), or uses VITE_API_BASE_URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL !== undefined 
-  ? import.meta.env.VITE_API_BASE_URL 
+// Base API URL: Automatically normalizes protocol for Render, Docker Nginx, or local development
+const rawApiBase = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = rawApiBase
+  ? (rawApiBase.startsWith("http") ? rawApiBase : `https://${rawApiBase}`)
   : (import.meta.env.PROD ? "" : "http://localhost:8000");
 
 // Global In-Memory Store to cache predefined City, State locations across renders
