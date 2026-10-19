@@ -47,24 +47,42 @@ Return your response strictly matching the schema format:
 - advisory_notes: Brief regional/climate resilience advice.
 """
 
-        response = client.models.generate_content(
-            model=self.model,
-            contents=[
-                types.Part.from_bytes(
-                    data=image_bytes,
-                    mime_type=mime_type or "image/jpeg"
-                ),
-                prompt
-            ],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=DiagnosisResult,
-                temperature=0.2
-            )
-        )
+        models_to_try = [self.model]
+        for fallback in ["gemini-3.8-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+            if fallback not in models_to_try:
+                models_to_try.append(fallback)
 
-        result_dict = json.loads(response.text)
-        return DiagnosisResult(**result_dict)
+        last_error = None
+        for model_name in models_to_try:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=[
+                        types.Part.from_bytes(
+                            data=image_bytes,
+                            mime_type=mime_type or "image/jpeg"
+                        ),
+                        prompt
+                    ],
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=DiagnosisResult,
+                        temperature=0.2
+                    )
+                )
+
+                result_dict = json.loads(response.text)
+                return DiagnosisResult(**result_dict)
+            except Exception as e:
+                err_msg = str(e)
+                last_error = e
+                # If model is 404 / deprecated / not found, try next fallback model
+                if "404" in err_msg or "NOT_FOUND" in err_msg or "not found" in err_msg.lower():
+                    continue
+                raise e
+
+        if last_error:
+            raise last_error
 
     async def diagnose(
         self, 

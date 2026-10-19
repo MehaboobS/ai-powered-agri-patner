@@ -53,8 +53,8 @@ class DiagnosisController:
             try:
                 await prisma_client.diagnosisscan.create(
                     data={
-                        "crop_type": result.detected_crop or crop_type,
-                        "disease_name": result.disease_name,
+                        "crop_type": result.crop_detected or crop_type,
+                        "disease_name": result.condition,
                         "confidence": float(result.confidence),
                         "severity": result.severity,
                         "language": language or "English"

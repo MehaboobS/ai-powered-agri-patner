@@ -29,6 +29,8 @@ services:
         value: "*"
       - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
 
   # 3. React + Vite Frontend (Global CDN Static Site)
   - type: web

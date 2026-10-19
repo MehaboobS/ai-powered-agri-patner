@@ -15,6 +15,6 @@ def health_check():
     return HealthResponse(
         status="online",
         service="Bharath Digital Agriculture Diagnostic Engine",
-        ai_provider="Gemini 2.5 Flash" if (api_key and api_key.strip()) else "Mock Mode (No GEMINI_API_KEY provided)",
+        ai_provider=f"Gemini AI ({settings.DEFAULT_MODEL})" if (api_key and api_key.strip()) else "Mock Mode (No GEMINI_API_KEY provided)",
         docs_url="/docs"
     )
