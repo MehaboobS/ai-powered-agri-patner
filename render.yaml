@@ -14,7 +14,7 @@ services:
   # 2. FastAPI Backend Service (Containerized)
   - type: web
     name: bharath-agri-backend
-    env: docker
+    runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
@@ -33,7 +33,7 @@ services:
   # 3. React + Vite Frontend (Global CDN Static Site)
   - type: web
     name: bharath-agri-frontend
-    env: static
+    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
@@ -43,7 +43,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: bharath-agri-backend
-          property: host
+        value: https://bharath-agri-backend.onrender.com

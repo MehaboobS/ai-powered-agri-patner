@@ -33,5 +33,7 @@ COPY . .
 # Expose API port
 EXPOSE 8000
 
-# Push Prisma schema migrations to PostgreSQL on startup, then start Uvicorn ASGI server
-CMD ["sh", "-c", "prisma db push --schema=prisma/schema.prisma && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Normalize Unix line endings and grant execution permissions on startup script
+RUN sed -i 's/\r$//' ./start.sh && chmod +x ./start.sh
+
+CMD ["sh", "./start.sh"]

@@ -5,6 +5,8 @@ from app.schemas.health import HealthResponse
 router = APIRouter(tags=["Health"])
 
 @router.get("/", response_model=HealthResponse)
+@router.get("/health", response_model=HealthResponse)
+@router.get("/api/health", response_model=HealthResponse)
 def health_check():
     """
     Returns service availability status and active AI provider state.
